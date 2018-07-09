@@ -20,7 +20,6 @@
 //= require components
 //= require home
 //= require fixed_header
-//= require search
 //= require users
 //= require editor
 
