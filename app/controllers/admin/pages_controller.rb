@@ -29,10 +29,7 @@ class Admin::PagesController < AdminController
   def upload
     @upload = CmsImageUpload.new(image: page_params[:image])
     @upload.save
-
-    respond_to do |format|
-      format.json { render :json => { url: @upload.image.url, upload_id: @upload.id  }  }
-    end
+    render json: { url: @upload.image.url, upload_id: @upload.id  }
   end
 
   private

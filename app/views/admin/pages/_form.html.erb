@@ -1,5 +1,5 @@
 <%= form_with(model: [:admin, page], local: true) do |form| %>
-  <%= render partial: 'layouts/cms_errors', locals: { object: page } %>
+  <%= render 'layouts/cms_errors', object: page %>
 
   <div class="form-group">
     <%= form.label :page_type %>

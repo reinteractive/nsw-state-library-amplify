@@ -22,10 +22,10 @@ RSpec.describe Page, type: :model do
       end
     end
 
-    context "when published is not" do
+    context "when the page is on draft" do
       let!(:published) { false }
 
-      it 'doesnot add the record to public_pages' do
+      it "doesn't update the public_pages" do
         expect do
           page.save
         end.to change { PublicPage.count }.by(0)
