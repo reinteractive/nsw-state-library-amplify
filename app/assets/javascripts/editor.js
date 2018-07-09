@@ -20,9 +20,7 @@ sendFile = function(file, toSummernote) {
             return toSummernote.summernote('insertNode', img);
 
     }
-
   });
-
 };
 
 deleteFile = function(file_id) {
@@ -34,10 +32,7 @@ deleteFile = function(file_id) {
         processData: false
 
   });
-
 };
-
-
 
 $(document).ready(function() {
   return $('[data-provider="summernote"]').each(function() {
