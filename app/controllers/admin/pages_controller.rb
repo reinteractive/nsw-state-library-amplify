@@ -10,11 +10,11 @@ class Admin::PagesController < AdminController
   end
 
   def update
-    # if  @institution.update(institution_params)
-    #   redirect_to admin_institutions_path
-    # else
-    #   render :edit
-    # end
+    if  @page.update(page_params)
+      redirect_to admin_pages_path
+    else
+      render :edit
+    end
   end
 
   def destroy
@@ -28,7 +28,7 @@ class Admin::PagesController < AdminController
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
-    def institution_params
+    def page_params
       params.require(:page).permit(:content, :page_type)
     end
 end
