@@ -1,5 +1,3 @@
-require 'rails_helper'
-
 RSpec.describe CollectionPolicy do
   let!(:collection) { FactoryBot.create :collection }
 

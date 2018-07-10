@@ -6,8 +6,8 @@ FactoryBot.define do
     url { 'http://archival.sl.nsw.gov.au/Details/archive' }
     image_url { 'https://slnsw-amplify.s3.amazonaws.com/image.jpg' }
     project_uid { 'nsw-state-library-amplify' }
-    association :institution, factory: :institution
-    association :vendor, factory: :vendor
     vendor_identifier { 1 }
+    institution
+    vendor
   end
 end

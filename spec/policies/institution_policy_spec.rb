@@ -1,5 +1,3 @@
-require 'rails_helper'
-
 RSpec.describe InstitutionPolicy do
   let!(:institution) { FactoryBot.create :institution }
 
