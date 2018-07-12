@@ -9,10 +9,12 @@ class Institution < ApplicationRecord
 
 
   has_many :collections
+  has_many :transcription_conventions
 
   validates :name, presence: true
   validates :name, uniqueness: true
   validates :slug, format:  { with: /\A^[a-zA-Z0-9-]*$\z/ }
+  validates :max_line_edits, numericality: true
 
   validate :image_size_restriction
 
@@ -22,4 +24,21 @@ class Institution < ApplicationRecord
     false
   end
 
+  after_create do
+    # creates the default list
+    TranscriptionConvention.create_default(id)
+  end
+
+  before_save do
+    # setting up the configs
+    self.min_lines_for_consensus = max_line_edits
+    self.min_lines_for_consensus_no_edits = max_line_edits
+  end
+
+  after_initialize do
+    # setting up the default config values
+    if self.new_record?
+      self.max_line_edits = 3
+    end
+  end
 end
