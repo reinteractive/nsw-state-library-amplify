@@ -6,8 +6,9 @@ app.views.TranscriptEdit = app.views.Transcript.extend({
 
     this.data = data;
 
-    this.loadConventions();
     this.loadTranscript();
+
+    // this.loadConventions();
     // this.loadTutorial();
     this.listenForAuth();
 
@@ -104,12 +105,7 @@ app.views.TranscriptEdit = app.views.Transcript.extend({
   },
 
   loadConventions: function(){
-    this.data.page_conventions = '';
-
-    if (this.data.project.pages['transcription_conventions.md']) {
-      var page = new app.views.Page(_.extend({}, {project: this.data.project, page_key: 'transcription_conventions.md'}))
-      this.data.page_conventions = page.toString();
-    }
+    this.data.page_conventions = this.data.transcript.conventions
   },
 
   loadListeners: function(){
@@ -256,6 +252,7 @@ app.views.TranscriptEdit = app.views.Transcript.extend({
     this.parseTranscript();
     this.loadPageContent();
     this.loadCompletionContent();
+    this.loadConventions()
     this.loadAudio();
   },
 
