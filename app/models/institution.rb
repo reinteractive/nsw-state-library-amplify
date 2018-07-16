@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# Institution represents each library
 class Institution < ApplicationRecord
   include ImageSizeValidation
 
@@ -7,18 +10,19 @@ class Institution < ApplicationRecord
   mount_uploader :image, ImageUploader
   mount_uploader :hero_image, ImageUploader
 
-
   has_many :collections
   has_many :transcription_conventions
 
   validates :name, presence: true
   validates :name, uniqueness: true
-  validates :slug, format:  { with: /\A^[a-zA-Z0-9-]*$\z/ }
+  validates :slug, format: { with: /\A^[a-zA-Z0-9-]*$\z/ }
   validates :max_line_edits, numericality: true
+
+  attribute :max_line_edits, :integer, default: 3
 
   validate :image_size_restriction
 
-  scope :order_asc, -> { order("LOWER(institutions.name)") }
+  scope :order_asc, -> { order('LOWER(institutions.name)') }
 
   def should_generate_new_friendly_id?
     false
@@ -33,12 +37,5 @@ class Institution < ApplicationRecord
     # setting up the configs
     self.min_lines_for_consensus = max_line_edits
     self.min_lines_for_consensus_no_edits = max_line_edits
-  end
-
-  after_initialize do
-    # setting up the default config values
-    if self.new_record?
-      self.max_line_edits = 3
-    end
   end
 end
