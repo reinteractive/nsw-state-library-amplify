@@ -11,12 +11,7 @@ app.views.TranscriptEdit = app.views.Transcript.extend({
     this.data = data;
 
     this.loadTranscript();
-
-    // this.loadConventions();
-    // this.loadTutorial();
     this.listenForAuth();
-
-
   },
 
   finished: function(){

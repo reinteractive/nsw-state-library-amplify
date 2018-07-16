@@ -10,7 +10,7 @@ RSpec.describe Institution, type: :model do
   it { should allow_value("correct-value").for(:slug)  }
   it { should_not allow_value("value with space").for(:slug)  }
 
-  context "when an instatution is first created" do
+  context "when an institution is first created" do
     let(:institution) { FactoryBot.build(:institution) }
 
     context ".create_default" do
