@@ -2,6 +2,10 @@ app.views.TranscriptEdit = app.views.Transcript.extend({
 
   template: _.template(TEMPLATES['transcript_edit.ejs']),
 
+  events: {
+    'click #conventions-link': 'showConventions'
+  },
+
   initialize: function(data){
 
     this.data = data;
@@ -19,6 +23,10 @@ app.views.TranscriptEdit = app.views.Transcript.extend({
     this.$('.transcript-finished').addClass('disabled');
     this.$('.show-when-finished').addClass('active');
     $(window).trigger('scroll-to', [$('#completion-content'), 100]);
+  },
+
+  showConventions: function(){
+    this.$('.conventions-page').toggleClass( "active"  )
   },
 
   lineEditDelete: function(i){

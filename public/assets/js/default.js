@@ -14610,6 +14610,7 @@ app.views.Transcript = app.views.Base.extend({
     // build audio string
     var audio_string = '<audio data-transcript="'+this.data.transcript.id+'" preload>';
     _.each(audio_urls, function(url){
+      url = "https://slnsw-amplify.s3.amazonaws.com/collections_v2/faith_bandler/audio/mloh307-0001-0008-s002-m.mp3"
       var ext = url.substr(url.lastIndexOf('.') + 1),
           type = ext;
       if (ext == 'mp3') type = 'mpeg';
@@ -15829,6 +15830,10 @@ app.views.TranscriptEdit = app.views.Transcript.extend({
 
   template: _.template(TEMPLATES['transcript_edit.ejs']),
 
+  events: {
+    'click #conventions-link': 'showConventions'
+  },
+
   initialize: function(data){
 
     this.data = data;
@@ -15846,6 +15851,10 @@ app.views.TranscriptEdit = app.views.Transcript.extend({
     this.$('.transcript-finished').addClass('disabled');
     this.$('.show-when-finished').addClass('active');
     $(window).trigger('scroll-to', [$('#completion-content'), 100]);
+  },
+
+  showConventions: function(){
+    this.$('.conventions-page').toggleClass( "active"  )
   },
 
   lineEditDelete: function(i){
