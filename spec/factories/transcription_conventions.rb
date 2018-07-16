@@ -1,8 +1,8 @@
 FactoryBot.define do
   factory :transcription_convention do
-    convertion_key "MyString"
-    convertion_text "MyString"
-    example "MyString"
-    institution_id 1
+    convention_key { Faker::Lorem.characters(10) }
+    convention_text { Faker::Lorem.characters(10) }
+    example { Faker::Lorem.characters(10) }
+    institution
   end
 end

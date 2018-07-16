@@ -10,8 +10,8 @@ class Institution < ApplicationRecord
   mount_uploader :image, ImageUploader
   mount_uploader :hero_image, ImageUploader
 
-  has_many :collections
-  has_many :transcription_conventions
+  has_many :collections, dependent: :destroy
+  has_many :transcription_conventions, dependent: :destroy
 
   validates :name, presence: true
   validates :name, uniqueness: true
@@ -22,7 +22,7 @@ class Institution < ApplicationRecord
 
   validate :image_size_restriction
 
-  scope :order_asc, -> { order('LOWER(institutions.name)') }
+  scope :order_asc, -> { order("LOWER(institutions.name)") }
 
   def should_generate_new_friendly_id?
     false
