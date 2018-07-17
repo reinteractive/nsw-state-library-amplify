@@ -34,8 +34,10 @@ class InstitutionPolicy < ApplicationPolicy
     def resolve
       if @user.admin?
         Institution.order_asc
-      else
+      elsif @user.content_editor?
         Institution.where(id: @user.institution_id).order_asc
+      else
+        Institution.none
       end
     end
   end

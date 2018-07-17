@@ -1,9 +1,9 @@
 class TranscriptionConventionPolicy < ApplicationPolicy
   attr_reader :user, :csope
 
-  def initialize(user, csope)
+  def initialize(user, scope)
     @user = user
-    @csope = csope
+    @csope = scope
   end
 
   def index?
