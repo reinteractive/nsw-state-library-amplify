@@ -51,10 +51,6 @@ class Admin::ThemesController < AdminController
   end
 
   def theme_params
-    params.require(:theme).permit(
-      :name, :url,
-      :image, :slug, :hero_image,
-      :introductory_text, :max_line_edits
-    )
+    params.require(:theme).permit(:name)
   end
 end
