@@ -26,8 +26,6 @@ class Admin::ThemesController < AdminController
   end
 
   def update
-    authorize Theme
-
     if @theme.update(theme_params)
       redirect_to admin_themes_path
     else
