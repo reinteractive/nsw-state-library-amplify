@@ -21,16 +21,16 @@ $(document).ready(function(){
     if (this.classList.contains('menu-item')) {
       return true
     }
-    if ($(this).attr('data-filter') == 'collection'){
+    if ($(this).attr('data-filter') === 'collection'){
       collectionId = $(this).attr('data-id');
     }
-    if ($(this).attr('data-filter') == 'institution'){
+    if ($(this).attr('data-filter') === 'institution'){
       institutionId = $(this).attr('data-id');
-      if (institutionId == ""){
+      if (institutionId === ""){
         collectionId = 0;
       }
     }
-    if ($(this).attr('data-filter') == 'sorting'){
+    if ($(this).attr('data-filter') === 'sorting'){
       sortId = $(this).attr('data-id');
     }
     loadTranscripts();
