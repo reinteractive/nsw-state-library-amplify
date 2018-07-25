@@ -1,8 +1,10 @@
-class ApplicationController < ActionController::API
-  include DeviseTokenAuth::Concerns::SetUserByToken
+class ApplicationController < ActionController::Base
+  # include DeviseTokenAuth::Concerns::SetUserByToken
+  include Authentication
+
   # Prevent CSRF attacks by raising an exception.
   # For APIs, you may want to use :null_session instead.
-  #  protect_from_forgery with: :exception
+  # protect_from_forgery with: :exception
 
   # Allow us to use JBuilder
   include ActionController::ImplicitRender
@@ -12,24 +14,30 @@ class ApplicationController < ActionController::API
   # self.perform_caching = true
   # self.cache_store = ActionController::Base.cache_store
 
-  before_filter :touch_session
+  before_action :touch_session
+  before_action :load_user_edits
+  before_action :load_footer
+
 
   # Ensure a session id is available for all!
   def touch_session
     session[:touched] = 1
   end
 
-  def is_admin?
-    user_signed_in? && current_user.isAdmin?
+  def load_user_edits
+    current_user.total_edits ||= TranscriptEdit.getByUser(current_user.id).count if current_user
   end
 
-  def authenticate_admin!
-    unless is_admin?
-      render json: {
-        error: 1,
-        message: 'You must log in as admin to access this section'
-      }
-      return
-    end
+  def authenticate_user
+    # We allow non logged in users to edit the transcripts
+    # raise ActionController::InvalidAuthenticityToken unless current_user
+  end
+
+  def load_footer
+    site = Site.new
+    @global_content = {
+      footer_content: site.footer_content,
+      footer_links: site.footer_links
+    }
   end
 end

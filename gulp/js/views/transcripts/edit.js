@@ -2,12 +2,15 @@ app.views.TranscriptEdit = app.views.Transcript.extend({
 
   template: _.template(TEMPLATES['transcript_edit.ejs']),
 
+  events: {
+    'click #conventions-link': 'showConventions'
+  },
+
   initialize: function(data){
+
     this.data = data;
 
-    this.loadConventions();
     this.loadTranscript();
-    // this.loadTutorial();
     this.listenForAuth();
   },
 
@@ -15,6 +18,10 @@ app.views.TranscriptEdit = app.views.Transcript.extend({
     this.$('.transcript-finished').addClass('disabled');
     this.$('.show-when-finished').addClass('active');
     $(window).trigger('scroll-to', [$('#completion-content'), 100]);
+  },
+
+  showConventions: function(){
+    this.$('.conventions-page').toggleClass( "active"  )
   },
 
   lineEditDelete: function(i){
@@ -48,6 +55,11 @@ app.views.TranscriptEdit = app.views.Transcript.extend({
     // implicit save; save even when user has not edited original text
     // only save if line is editable
     if (text != userText && line.is_editable) {
+      // Don't save if the user is in Play All mode and hasn't changed the text.
+      if ((this.play_all) && (line.display_text == text)) {
+        return;
+      }
+
       var is_new = !$input.closest('.line').hasClass('user-edited');
 
       // update UI
@@ -96,12 +108,7 @@ app.views.TranscriptEdit = app.views.Transcript.extend({
   },
 
   loadConventions: function(){
-    this.data.page_conventions = '';
-
-    if (this.data.project.pages['transcription_conventions.md']) {
-      var page = new app.views.Page(_.extend({}, {project: this.data.project, page_key: 'transcription_conventions.md'}))
-      this.data.page_conventions = page.toString();
-    }
+    this.data.page_conventions = this.data.transcript.conventions
   },
 
   loadListeners: function(){
@@ -183,6 +190,11 @@ app.views.TranscriptEdit = app.views.Transcript.extend({
       _this.finished();
     });
 
+    this.$el.on('click.transcript', '.play-all', function(e) {
+      e.preventDefault();
+      _this.playAll();
+    });
+
     this.loadAnalytics();
   },
 
@@ -217,7 +229,7 @@ app.views.TranscriptEdit = app.views.Transcript.extend({
 
     this.render();
     this.$el.removeClass('loading');
-    this.$('.start-play').removeClass('disabled');
+    this.$('.start-play, .play-all').removeClass('disabled');
     this.loadListeners();
     this.message('Loaded transcript');
     if (!this.loaded) this.loaded = true;
@@ -243,13 +255,14 @@ app.views.TranscriptEdit = app.views.Transcript.extend({
     this.parseTranscript();
     this.loadPageContent();
     this.loadCompletionContent();
+    this.loadConventions()
     this.loadAudio();
   },
 
   onTimeUpdate: function(){
     if (this.player.playing) this.playerState('playing');
     if (this.pause_at_time !== undefined && this.player.currentTime >= this.pause_at_time) {
-      this.playerPause();
+      this.playerPause({trigger: 'end_of_line'});
     }
   },
 

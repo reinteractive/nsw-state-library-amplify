@@ -2,6 +2,7 @@
 app.views.Transcript = app.views.Base.extend({
 
   current_line_i: -1,
+  play_all: false,
 
   centerOn: function($el){
     var offset = $el.offset().top,
@@ -30,7 +31,8 @@ app.views.Transcript = app.views.Base.extend({
     // user is clicking rapidly; don't animate
     if (timeSinceLastAction < (animationDuration+animationPadding)) {
       $('html, body').scrollTop(scrollOffset);
-    } else {
+    }
+    else {
       $('html, body').animate({scrollTop: scrollOffset}, animationDuration);
     }
 
@@ -76,6 +78,13 @@ app.views.Transcript = app.views.Base.extend({
     }
   },
 
+  getPageTitle: function() {
+    if (!!this.data.transcript) {
+      return this.data.transcript.title;
+    }
+    return '';
+  },
+
   lineNext: function(){
     this.lineSelect(this.current_line_i + 1);
   },
@@ -106,14 +115,18 @@ app.views.Transcript = app.views.Base.extend({
     this.current_line = this.data.transcript.lines[i];
 
     // update UI
+    var $active = $('.line[sequence="' + i + '"]').first();
+    var $input = $active.find('input');
+
     $('.line.active').removeClass('active');
-    var $active = $('.line[sequence="'+i+'"]').first();
     $active.addClass('active');
+
     this.centerOn($active);
 
-    // focus on input
-    var $input = $active.find('input');
-    if ($input.length) $input.first().focus();
+    if (!this.play_all) {
+      // focus on input
+      if ($input.length) $input.first().focus();
+    }
 
     // fit input
     this.fitInput($input);
@@ -389,11 +402,17 @@ app.views.Transcript = app.views.Base.extend({
     if (this.data.transcript.percent_completed > 0) this.data.transcript.hasLinesCompleted = true;
   },
 
-  playerPause: function(){
+  playerPause: function(options) {
+    if (options === undefined) options = {};
+
     if (this.player.playing) {
       this.player.pause();
       this.message('Paused');
       this.playerState('paused');
+
+      if (this.play_all && (options.trigger == 'end_of_line')) {
+        this.lineNext();
+      }
     }
   },
 
@@ -418,7 +437,7 @@ app.views.Transcript = app.views.Base.extend({
 
   playerToggle: function(){
     if (this.player.playing) {
-      this.playerPause();
+      this.playerPause({trigger: 'manual'});
 
     } else {
       this.playerPlay();
@@ -435,6 +454,12 @@ app.views.Transcript = app.views.Base.extend({
     this.$el.html(this.template(this.data));
     this.renderLines();
     this.loadUserProgress();
+    var pageTitle = this.getPageTitle();
+    if (!!pageTitle.length) {
+      document.title = app.pageTitle(pageTitle);
+    }
+    // Reload social media.
+    // window.app.social.init();
   },
 
   renderLines: function(){
@@ -460,7 +485,7 @@ app.views.Transcript = app.views.Base.extend({
   },
 
   start: function(){
-    this.$('.start-play').addClass('disabled');
+    this.$('.start-play, .play-all').addClass('disabled');
 
     var selectLine = 0,
         lines = this.data.transcript.lines;
@@ -474,6 +499,12 @@ app.views.Transcript = app.views.Base.extend({
     });
 
     this.lineSelect(selectLine);
+  },
+
+  playAll: function() {
+    this.play_all = true;
+
+    this.start();
   },
 
   submitEdit: function(data){

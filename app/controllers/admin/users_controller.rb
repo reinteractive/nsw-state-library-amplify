@@ -1,41 +1,32 @@
-class Admin::UsersController < ApplicationController
-  include ActionController::MimeResponds
+class Admin::UsersController < AdminController
+  before_action :set_user, only: [:update]
 
-  before_filter :authenticate_admin!
-
-  before_action :set_user, only: [:show, :update, :destroy]
-
-  # GET /admin/users
-  # GET /admin/users.json
   def index
-    respond_to do |format|
-      format.html {
-        render :file => "public/#{ENV['PROJECT_ID']}/admin.html"
-      }
-      format.json {
-        @users = User.getAll
-      }
-    end
+    authorize User
+
+    @users = policy_scope(User).getAll.decorate
+    @user_roles = policy_scope(UserRole).getAll
+    @institutions = policy_scope(Institution).all
   end
 
   # PATCH/PUT /admin/users/{id}.json
   def update
+    authorize User
 
-    if @transcript.update(transcript_params)
+    if @user.update(user_params)
       head :no_content
     else
-      render json: @transcript.errors, status: :unprocessable_entity
+      render json: @user.errors, status: :unprocessable_entity
     end
   end
 
   private
 
-    def set_user
-      @transcript = Transcript.find_by(uid: params[:id])
-    end
+  def set_user
+    @user = User.find(params[:id])
+  end
 
-    def user_params
-      params.require(:user).permit(:user_role_id)
-    end
-
+  def user_params
+    params.require(:user).permit(:user_role_id, :institution_id)
+  end
 end

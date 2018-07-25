@@ -1,22 +1,10 @@
-class Admin::StatsController < ApplicationController
-  include ActionController::MimeResponds
+class Admin::StatsController < AdminController
+  before_action :authenticate_staff!
 
-  before_filter :authenticate_admin!
-
-  # GET /admin
-  # GET /admin.json
   def index
-    respond_to do |format|
-      format.html {
-        render :file => "public/#{ENV['PROJECT_ID']}/admin.html"
-      }
-      format.json {
-        @stats = [
-          {label: "User Registration Stats", data: User.getStatsByDay},
-          {label: "Transcript Edit Stats", data: TranscriptEdit.getStatsByDay}
-        ]
-      }
-    end
-  end
+    authorize :stats, :index?
 
+    @stats = StatsService.new(current_user).all_stats
+    @flags = Flag.pending_flags(current_user.institution_id)
+  end
 end

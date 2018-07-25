@@ -1,4 +1,4 @@
-class TranscriptLine < ActiveRecord::Base
+class TranscriptLine < ApplicationRecord
 
   include PgSearch
   multisearchable :against => [:original_text, :guess_text]
@@ -6,8 +6,8 @@ class TranscriptLine < ActiveRecord::Base
   pg_search_scope :search_by_original_text, :against => :original_text
   pg_search_scope :search_by_guess_text, :against => :guess_text
 
-  belongs_to :transcript_line_status
-  belongs_to :transcript, touch: true
+  belongs_to :transcript_line_status, optional: true
+  belongs_to :transcript, optional: true,touch: true
   has_many :transcript_edits
   has_many :flags
 
@@ -63,7 +63,7 @@ class TranscriptLine < ActiveRecord::Base
   # Update the line's status and best-guess text based on contributed edits
   def recalculate(edits=nil, project=nil)
     edits ||= TranscriptEdit.getByLine(id)
-    project ||= Project.getActive
+    project ||= Project.getActive(transcript.collection_id)
     statuses = TranscriptLineStatus.allCached
 
     # Init status & text
@@ -157,7 +157,7 @@ class TranscriptLine < ActiveRecord::Base
 
   def recalculateSpeaker(edits=nil, project=nil)
     edits ||= TranscriptSpeakerEdit.getByLine(id)
-    project ||= Project.getActive
+    project ||= Project.getActive(transcript.collection_id)
     consensus = project[:data]["consensus"]
     best_speaker_id = 0
 

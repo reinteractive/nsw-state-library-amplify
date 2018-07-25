@@ -1,13 +1,18 @@
 class TranscriptsController < ApplicationController
-  include ActionController::MimeResponds
+  skip_before_action :verify_authenticity_token, only: [:index, :search, :show]
 
-  before_action :set_transcript, only: [:show, :update, :destroy]
+  include DeviseTokenAuth::Concerns::SetUserByToken
+
+  include ActionController::MimeResponds
+  include IndexTemplate
+
+  before_action :set_transcript, only: [:show, :update, :destroy, :facebook_share]
 
   # GET /transcripts.json
   def index
     project = Project.getActive
     @project_settings = project[:data]
-    @transcripts = Transcript.getForHomepage(params[:page])
+    @transcripts = Transcript.getForHomepage(params[:page], {order: 'id'})
   end
 
   # GET /search?sort_by=completeness&order=desc&collection_id=1&q=amy&page=1
@@ -15,7 +20,7 @@ class TranscriptsController < ApplicationController
   def search
     respond_to do |format|
       format.html {
-        render :file => "public/#{ENV['PROJECT_ID']}/index.html"
+        render file: environment_index_file
       }
       format.json {
         project = Project.getActive
@@ -30,7 +35,11 @@ class TranscriptsController < ApplicationController
   def show
     respond_to do |format|
       format.html {
-        render :file => "public/#{ENV['PROJECT_ID']}/index.html"
+        # If this is the Facebook scraper, redirect to a page that includes the Open Graph meta tags.
+        if request.user_agent.downcase.include?('facebookexternalhit')
+          redirect_to facebook_share_transcript_path(@transcript.uid) and return
+        end
+        render file: environment_index_file
       }
       format.json {
         @user_role = nil
@@ -39,11 +48,14 @@ class TranscriptsController < ApplicationController
         @transcript_speakers = TranscriptSpeaker.getByTranscriptId(@transcript.id)
         @flag_types = FlagType.byCategory("error")
         @user_flags = []
+        @transcription_conventions = @transcript.transcription_conventions
 
-        if user_signed_in?
-          @user_edits = TranscriptEdit.getByTranscriptUser(@transcript.id, current_user.id)
-          @user_role = current_user.user_role
-          @user_flags = Flag.getByTranscriptUser(@transcript.id, current_user.id)
+        user = logged_in_user
+
+        if user
+          @user_edits = TranscriptEdit.getByTranscriptUser(@transcript.id, user.id)
+          @user_role = user.user_role
+          @user_flags = Flag.getByTranscriptUser(@transcript.id, user.id)
         else
           @user_edits = TranscriptEdit.getByTranscriptSession(@transcript.id, session.id)
           @user_flags = Flag.getByTranscriptSession(@transcript.id, session.id)
@@ -82,6 +94,10 @@ class TranscriptsController < ApplicationController
     head :no_content
   end
 
+  def facebook_share
+    render file: "public/#{ENV['PROJECT_ID']}/facebook_share.html.erb"
+  end
+
   private
 
     def set_transcript
@@ -94,5 +110,12 @@ class TranscriptsController < ApplicationController
 
     def search_params
       params.permit(:sort_by, :order, :collection_id, :q, :page, :deep)
+    end
+
+    # since we we using a combination of devise + rails and
+    # API authenticatoin (with backbone in transcript edits page)
+    # we need to check warden session here
+    def logged_in_user
+      warden.user
     end
 end

@@ -1,11 +1,16 @@
-class User < ActiveRecord::Base
+class User < ApplicationRecord
   # Include default devise modules.
   devise :database_authenticatable,
           # :recoverable, :confirmable, :registerable,
           :rememberable, :trackable, :validatable, :omniauthable
+  devise :omniauthable, omniauth_providers: [:google_oauth2]
+
   include DeviseTokenAuth::Concerns::User
 
-  belongs_to :user_role
+  belongs_to :user_role, optional: true
+  belongs_to :institution, optional: true
+
+  attr_accessor :total_edits
 
   def incrementLinesEdited(amount=1)
     update_attributes(lines_edited: lines_edited + amount)
@@ -25,16 +30,52 @@ class User < ActiveRecord::Base
     end
   end
 
+  # depriciated method
   def isAdmin?
     role = user_role
     role = UserRole.find user_role_id if !role && user_role_id > 0
     role && role.name == "admin"
   end
 
+  # new admin check
+  def admin?
+    user_role.try(:name) == "admin"
+  end
+
+  # depriciated method
+  def isModerator?
+    role = user_role
+    role = UserRole.find user_role_id if !role && user_role_id > 0
+    role && (role.name == "moderator" || role.name == "admin")
+  end
+
+  # new method
+  def moderator?
+    user_role.try(:name) == "moderator"
+  end
+
+  def content_editor?
+    user_role.try(:name) == "content_editor"
+  end
+
+
+  # can be either,
+  # admin, moderator, content_editor
+  def staff?
+    admin? || moderator? || content_editor?
+  end
+
+  def admin_or_content_editor?
+    admin? || content_editor?
+  end
+
+
+  def admin_or_moderator?
+    admin? || moderator?
+  end
+
   def self.getAll
-    Rails.cache.fetch("#{ENV['PROJECT_ID']}/users/all", expires_in: 10.minutes) do
-      User.order("lines_edited DESC").limit(100)
-    end
+    User.order("lines_edited DESC").limit(1000)
   end
 
   def self.getStatsByDay
@@ -44,6 +85,20 @@ class User < ActiveRecord::Base
         .group('DATE(created_at)')
         .order('DATE(created_at)')
     end
+  end
+
+  # https://github.com/zquestz/omniauth-google-oauth2
+  def self.from_omniauth(access_token)
+    data = access_token.info
+    user = User.where(email: data['email']).first
+
+    unless user
+      user = User.create(name: data['name'],
+                         email: data['email'],
+                         password: Devise.friendly_token[0,20]
+                        )
+    end
+    user
   end
 
 end

@@ -1,18 +1,62 @@
-class Transcript < ActiveRecord::Base
+class Transcript < ApplicationRecord
+  include ImageSizeValidation
+  include UidValidationOnUpdate
+
+  mount_uploader :image, ImageUploader
+  mount_uploader :audio, AudioUploader
+  mount_uploader :script, TranscriptUploader
 
   include PgSearch
   multisearchable :against => [:title, :description]
   pg_search_scope :search_default, :against => [:title, :description]
   pg_search_scope :search_by_title, :against => :title
 
-  validates_uniqueness_of :uid
+  validates :uid, presence: true, uniqueness: true
+  validates :vendor, presence: true
+  validate :image_size_restriction
+  validate :uid_not_changed
 
-  belongs_to :collection
-  belongs_to :vendor
-  belongs_to :transcript_status
+  belongs_to :collection, optional: true
+  belongs_to :vendor, optional: true
+  belongs_to :transcript_status, optional: true
   has_many :transcript_lines
   has_many :transcript_edits
   has_many :transcript_speakers
+
+
+
+  def self.seconds_per_line
+    5
+  end
+
+  def transcription_conventions
+    collection.institution.transcription_conventions
+  end
+
+  # speakers getters and setters used to manage the transcript_speakers
+  # when creating or editing a transcript
+  def speakers
+    return "" if transcript_speakers.blank?
+    transcript_speakers.includes(:speaker).pluck(:name).join("; ") + "; "
+  end
+
+  def speakers=(params)
+    return unless valid?
+
+    ActiveRecord::Base.transaction do
+      # remove the exist transcript speakers
+      transcript_speakers.destroy_all
+
+      # replace the transcript speakers with the new or revised selection
+      params.split(';').reject(&:blank?).each do |name|
+        transcript_speakers.build(
+          speaker_id: Speaker.find_or_create_by(name: name.strip).id,
+          collection_id: collection.id,
+          project_uid: project_uid
+        )
+      end
+    end
+  end
 
   def to_param
     uid
@@ -28,20 +72,93 @@ class Transcript < ActiveRecord::Base
       .where(transcript_edits: {user_id: user_id}).distinct
   end
 
+  def self.getForExport(project_uid, collection_uid=false)
+    if collection_uid
+      Transcript
+        .select("transcripts.*, collections.uid AS collection_uid")
+        .joins("INNER JOIN collections ON collections.id = transcripts.collection_id")
+        .where("transcripts.lines > 0 AND transcripts.project_uid = :project_uid AND transcripts.is_published = :is_published AND collections.uid = :collection_uid", {project_uid: project_uid, is_published: 1, collection_uid: collection_uid})
+
+    else
+      Transcript
+        .select("transcripts.*, COALESCE(collections.uid, \'\') as collection_uid")
+        .joins("LEFT OUTER JOIN collections ON collections.id = transcripts.collection_id")
+        .where("transcripts.lines > 0 AND transcripts.project_uid = :project_uid AND transcripts.is_published = :is_published", {project_uid: project_uid, is_published: 1})
+    end
+  end
+
+  def self.sort_string(sort)
+    case sort
+    when "title_asc"
+      "transcripts.title asc, transcripts.id asc"
+    when "title_desc"
+      "transcripts.title desc, transcripts.id desc"
+    when "percent_completed_desc"
+      "transcripts.percent_completed desc, transcripts.percent_edited desc"
+    when "percent_completed_asc"
+      "transcripts.percent_completed asc, transcripts.percent_edited"
+    when "duration_asc"
+      "transcripts.duration asc, transcripts.id"
+    when "duration_desc"
+      "transcripts.duration desc, transcripts.id desc"
+    when "collection_id_asc"
+      "collections.title asc, transcripts.id"
+    else
+      nil
+    end
+  end
+
+  def self.get_for_home_page(params)
+    sort = params[:sort_id].to_s
+
+    query = Transcript
+      .select('transcripts.*, COALESCE(collections.title, \'\') as collection_title')
+      .joins('LEFT OUTER JOIN collections ON collections.id = transcripts.collection_id')
+      .where("transcripts.lines > 0 AND transcripts.project_uid = :project_uid AND transcripts.is_published = :is_published", {project_uid: ENV['PROJECT_ID'], is_published: 1})
+
+    # scope by collection
+    query = query.where("transcripts.collection_id = #{params[:collection_id]}") if params[:collection_id].to_i > 0
+
+    # scope by institution
+    query = query.where("collections.institution_id = #{params[:institution_id]}") if params[:institution_id].to_i > 0
+
+    # scope for theme
+    # since the theme is coming from the dropdown, we can use it as is
+    if params[:theme].present?
+      query = query.joins('inner join taggings on taggings.taggable_id = collections.id inner join tags on tags.id =  taggings.tag_id')
+      query = query.where("tags.name = ?", params[:theme])
+    end
+
+    # search text
+    query = query.where("transcripts.title ILIKE :search or transcripts.description ILIKE :search", search: "%#{params[:text]}%") if params[:text].present?
+
+    if sort.match(/title/i)
+      arr = query.sort_by {|e| e.title.gsub(/\d+/) {|num| "#{num.length} #{num}"}}
+      sort == "title_asc" ? arr : arr.reverse
+    else
+      order = sort_string(params[:sort_id])
+      query = query.order(order) if order
+      query
+    end
+  end
+
   def self.getForHomepage(page=1, options={})
     page ||= 1
-    options[:order] ||= "title"
+    str_order = sort_string(options)
+
     project = Project.getActive
 
     per_page = 500
     per_page = project[:data]["transcriptsPerPage"].to_i if project && project[:data]["transcriptsPerPage"]
 
     Rails.cache.fetch("#{ENV['PROJECT_ID']}/transcripts/#{page}/#{per_page}/#{options[:order]}", expires_in: 10.minutes) do
-      Transcript
+      query = Transcript
         .select('transcripts.*, COALESCE(collections.title, \'\') as collection_title')
         .joins('LEFT OUTER JOIN collections ON collections.id = transcripts.collection_id')
         .where("transcripts.lines > 0 AND transcripts.project_uid = :project_uid AND transcripts.is_published = :is_published", {project_uid: ENV['PROJECT_ID'], is_published: 1})
-        .paginate(:page => page, :per_page => per_page).order("transcripts.#{options[:order]}")
+        .paginate(:page => page, :per_page => per_page)
+      query =  query.order(str_order) if str_order
+      query
     end
   end
 
@@ -267,7 +384,7 @@ class Transcript < ActiveRecord::Base
     if options[:deep].present? && options[:q].present? && !options[:q].blank?
       # Build initial query w/ pagination
       transcripts = TranscriptLine
-        .select('transcripts.*, COALESCE(collections.title, \'\') AS collection_title, transcript_lines.guess_text, transcript_lines.original_text, transcript_lines.start_time')
+        .select('transcripts.*, COALESCE(collections.title, \'\') AS collection_title, transcript_lines.guess_text, transcript_lines.original_text, transcript_lines.start_time, transcript_lines.transcript_id')
         .joins('INNER JOIN transcripts ON transcripts.id = transcript_lines.transcript_id')
         .joins('LEFT OUTER JOIN collections ON collections.id = transcripts.collection_id')
 
@@ -392,5 +509,4 @@ class Transcript < ActiveRecord::Base
       end
     end
   end
-
 end

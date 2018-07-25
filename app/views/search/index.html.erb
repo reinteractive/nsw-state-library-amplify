@@ -1,0 +1,26 @@
+<%= render partial: 'shared/header_logo' %>
+<br />
+<br />
+<form id="search-form" class="search-form large" role="search">
+  <input name="keyword" id="keyword" value="" placeholder="Search All Transcripts">
+  <button type="submit" class="submit" title="Submit" aria-label="Submit"></button>
+</form>
+<div data-sticky="#transcript-facets" class="sticky-on-scroll" id="fixedHeader">
+  <div id="transcript-facets" class="transcript-facets">
+    <div>
+      <div class="facet">
+        <label for="filter-by-collection">Filter by Collection: </label>
+        <div name="filter-by-collection" class="select collection">
+          <div class="select-active collection-filter">All Collections</div>
+          <div class="select-options collection-filter" role="menu" aria-hidden="true">
+            <%= raw collection_list(@collection) %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="transcript-results" class="transcript-results">
+  <div id="search-result" class="transcript-list-search" role="list">
+  </div>
+</div>

@@ -1,9 +1,14 @@
 class CollectionsController < ApplicationController
+  include ActionController::MimeResponds
+  include IndexTemplate
+
+  layout 'public', only: [:index]
+
   before_action :set_collection, only: [:show, :update, :destroy]
 
   # GET /collections.json
   def index
-    @collections = Collection.getForHomepage
+    @collection = Collection.order("title")
   end
 
   # GET /collections/the-uid.json

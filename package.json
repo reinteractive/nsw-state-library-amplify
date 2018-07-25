@@ -1,5 +1,6 @@
 {
   "name": "TranscriptEditor",
+  "private": true,
   "version": "1.0.0",
   "description": "A web app for fixing transcripts that were automatically generated from speech-to-text software",
   "repository": {
@@ -13,7 +14,13 @@
     "gulp-rename": "^1.2.2",
     "gulp-sass": "^2.1.1",
     "gulp-uglify": "^1.5.1",
+    "j-toker": "github:jclif/j-toker",
+    "jquery": "^1.12.4",
+    "js-cookie": "^2.2.0",
     "vinyl-map": "^1.0.1"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "gulp": "^3.9.1"
+  }
 }

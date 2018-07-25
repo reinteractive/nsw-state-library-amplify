@@ -1,4 +1,8 @@
 class TranscriptEditsController < ApplicationController
+  skip_before_action :verify_authenticity_token, only: [:create]
+  before_action :authenticate_user, only: [:create]
+
+
   before_action :set_transcript_edit, only: [:show, :update, :destroy]
 
   # GET /transcript_edits.json?transcript_line_id=1
@@ -29,7 +33,7 @@ class TranscriptEditsController < ApplicationController
     params[:transcript_edit][:session_id] = session.id
     t = params[:transcript_edit]
     line = TranscriptLine.find t[:transcript_line_id]
-    project = Project.getActive
+    project = Project.getActive(line.transcript.collection_id)
 
     unless line
       head :no_content

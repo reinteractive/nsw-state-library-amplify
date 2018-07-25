@@ -33,21 +33,29 @@ app.views.TranscriptFacets = app.views.Base.extend({
 
   initFacets: function(){
     // set defaults
-    var active_collection_id = 'ALL';
-    var active_sort = 'title';
-    var active_order = 'asc';
-    var active_keyword = '';
+    var active_collection_id = Amplify.getConfig('homepage.search.sort_options.active_collection_id', 'ALL');
+    var active_sort = Amplify.getConfig('homepage.search.sort_options.active_sort', 'id');
+    var active_order = Amplify.getConfig('homepage.search.sort_options.active_order', 'asc');
+    var active_keyword = Amplify.getConfig('homepage.search.sort_options.active_keyword', '');
 
     // check for query params
     if (this.data.queryParams) {
       var params = this.data.queryParams;
-      if (params.sort_by) active_sort = params.sort_by;
-      if (params.order) active_order = params.order;
-      if (params.collection_id) active_collection_id = params.collection_id;
-      if (params.keyword) active_keyword = params.keyword;
+      if (params.sort_by) {
+        active_sort = params.sort_by;
+      }
+      if (params.order) {
+        active_order = params.order;
+      }
+      if (params.collection_id) {
+        active_collection_id = params.collection_id;
+      }
+      if (params.keyword) {
+        active_keyword = params.keyword;
+      }
     }
 
-    // add an "all collections" options
+    // Add an "all collections" options.
     if (this.data.collections.length) {
       var all_collections = {
         id: 'ALL',
@@ -64,6 +72,7 @@ app.views.TranscriptFacets = app.views.Base.extend({
 
     // set sort option
     this.data.sort_options = [
+      {id: 'random_asc', name: 'random', order: 'asc', label: 'Random'},
       {id: 'title_asc', name: 'title', order: 'asc', label: 'Title (A to Z)'},
       {id: 'title_desc', name: 'title', order: 'desc', label: 'Title (Z to A)'},
       {id: 'completeness_desc', name: 'completeness', order: 'desc', label: 'Completeness (most to least)'},
@@ -84,8 +93,23 @@ app.views.TranscriptFacets = app.views.Base.extend({
   },
 
   render: function(){
-    this.$el.html(this.template(this.data));
+    this.$el.html(this.template(
+      this.sanitiseRenderData(this.data)
+    ));
     return this;
+  },
+
+  /**
+   * Remove HTML markup from collection descriptions before sending to facet template.
+   */
+  sanitiseRenderData: function(data) {
+    data.collections = data.collections.map(function(collection) {
+      if (collection.hasOwnProperty('description')) {
+        collection.description = collection.description.replace(/<[^>]+>/g, '');
+      }
+      return collection;
+    });
+    return data;
   },
 
   search: function(keyword){
