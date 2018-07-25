@@ -1,11 +1,7 @@
 # sorting list for the homepage dropown
 class SortList
   def self.list
-    arr = []
-    options.each do |key, value|
-      arr << OpenStruct.new(id: key, title: value)
-    end
-    arr
+    options.map { |id, title| OpenStruct.new(id: id, title: title)  }
   end
 
   def self.options
