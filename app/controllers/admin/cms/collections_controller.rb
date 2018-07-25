@@ -42,7 +42,7 @@ class Admin::Cms::CollectionsController < AdminController
     authorize @collection
 
     @collection.destroy
-    flash[:notice] = "Collection item has been deleted"
+    flash[:notice] = "Collection has been deleted"
     redirect_to admin_cms_path
   end
 
