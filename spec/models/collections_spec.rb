@@ -78,4 +78,8 @@ RSpec.describe Collection, type: :model do
       end
     end
   end
+
+  describe "#destroy" do
+
+  end
 end

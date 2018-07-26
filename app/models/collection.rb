@@ -5,7 +5,7 @@ class Collection < ApplicationRecord
   mount_uploader :image, ImageUploader
   acts_as_taggable_on :themes
 
-  has_many :transcripts
+  has_many :transcripts, dependent: :destroy
   belongs_to :vendor
   belongs_to :institution
 
