@@ -9,11 +9,9 @@ RSpec.describe Collection, type: :model do
     it { is_expected.to validate_presence_of :description }
     it { is_expected.to validate_presence_of :uid }
     it { is_expected.to validate_presence_of :title }
-    it { is_expected.to validate_presence_of :url }
 
     it { is_expected.to validate_uniqueness_of :uid }
     it { is_expected.to validate_uniqueness_of :title }
-    it { is_expected.to validate_uniqueness_of :url }
   end
 
   let(:vendor) { Vendor.create(uid: 'voice_base', name: 'VoiceBase') }
@@ -80,6 +78,27 @@ RSpec.describe Collection, type: :model do
   end
 
   describe "#destroy" do
+    let!(:collection) { FactoryBot.create :collection }
 
+    before(:each) do
+      transcript = FactoryBot.create :transcript, collection: collection
+      FactoryBot.create :transcript_line, transcript: transcript
+      FactoryBot.create :transcript_speaker, transcript: transcript, collection_id: collection.id
+    end
+
+    it "deletes all related associations" do
+      lines = TranscriptLine.where(transcript_id: collection.transcripts.first.id)
+      spekers = TranscriptSpeaker.where(transcript_id: collection.transcripts.first.id)
+
+      expect(collection.transcripts.count).to eq(1)
+      expect(lines.count).to eq(1)
+      expect(spekers.count).to eq(1)
+
+      collection.destroy
+
+      expect(Transcript.where(collection_id: collection.id).count).to eq(0)
+      expect(lines.count).to eq(0)
+      expect(spekers.count).to eq(0)
+    end
   end
 end

@@ -11,7 +11,7 @@ class Collection < ApplicationRecord
 
   validates :vendor, :description, presence: true
   validates :institution_id, presence: true
-  validates :uid, :title, :url, presence: true, uniqueness: true
+  validates :uid, :title, presence: true, uniqueness: true
   validate :image_size_restriction
   validate :uid_not_changed
 
