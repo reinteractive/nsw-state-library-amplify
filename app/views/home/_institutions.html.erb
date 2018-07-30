@@ -1,11 +1,3 @@
-<%# <label for="filter-by-collection">Institution: </label> %>
-<%# <div name="filter-by-collection" class="select collection"> %>
-<%#   <div class="select-active collection-filter">All Institutions</div> %>
-<%#   <div class="select-options collection-filter" role="menu" aria-hidden="true"> %>
-<%#     <%= raw institution_list(institutions) %1> %>
-<%#   </div> %>
-<%# </div> %>
-
 <%
     index = institutions.index { |e| e.id == selected_id }
     if index
