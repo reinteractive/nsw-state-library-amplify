@@ -17,6 +17,6 @@ module Publishable
   end
 
   def publish!
-    update_column('published_at', DateTime.now)
+    update_column('published_at', Time.current)
   end
 end

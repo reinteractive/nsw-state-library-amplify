@@ -35,7 +35,7 @@ RSpec.describe Collection, type: :model do
 
   describe "#published?" do
     it "confirms that the collection has a published_at date" do
-      collection.update!(published_at: Date.new)
+      collection.update!(published_at: Time.current)
       expect(collection).to be_published
     end
 
