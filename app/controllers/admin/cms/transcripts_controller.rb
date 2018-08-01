@@ -48,8 +48,8 @@ class Admin::Cms::TranscriptsController < AdminController
 
   def reset_transcript
     TranscriptService.new(@transcript).reset
-    # this is an admin only functionality, error will be raised and
-    # lodge in bugsnag in an event of an error
+    # this functionality is only for admins, error will be raised and
+    # lodged in bugsnag in an event of an error
     flash[:notice] = "Transcript reset successful"
     redirect_to admin_cms_collection_path(@transcript.collection)
   end
