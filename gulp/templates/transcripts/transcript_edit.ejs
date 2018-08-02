@@ -47,15 +47,25 @@
     <% } %>
 
     <% if (transcript.url) { %>
-      <p class="original-link"><a href="<%= transcript.url %>" target="_blank">View audio in Library catalogue</a></p>
+      <p class="original-link"><a href="<%= transcript.url %>" target="_blank">
+        <%= transcript.audio_item_url_title %>
+      </a></p>
     <% } %>
 
     <%if (transcript.image_catalogue_url) { %>
-      <p class="original-link"><a href="<%= transcript.image_catalogue_url %>" target="_blank">View image in Library catalogue</a></p>
+      <p class="original-link">
+        <a href="<%= transcript.image_catalogue_url %>" target="_blank">
+          <%= transcript.image_item_url_title %>
+        </a>
+      </p>
     <% } %>
 
     <% if (transcript.can_download) { %>
-      <p class="download-link"><a href="#download" data-modal="transcript-download" class="modal-invoke">Download this transcript</a></p>
+      <p class="download-link">
+        <a href="#download" data-modal="transcript-download" class="modal-invoke">
+          <%= transcript.collection.collection_url_title %>
+        </a>
+      </p>
     <% } %>
 
     <div class="social">
