@@ -27,6 +27,14 @@ module ApplicationHelper
     time
   end
 
+  def page_title
+    if @page_title
+      "#{@page_title} | Amplify"
+    else
+      'Amplify'
+    end
+  end
+
 
   #FIXME: this needs to be changed to the current time format
   def display_time(time)
