@@ -27,12 +27,13 @@ module ApplicationHelper
     time
   end
 
+  # NOTE: format we need
+  #       if the title is empty -> 'Amplify'
+  #       if the title is not empty -> '<title> | Amplify'
   def page_title
-    if @page_title
-      "#{@page_title} | Amplify"
-    else
-      'Amplify'
-    end
+    title = "Amplify"
+    title.prepend("#{@page_title} | ")
+    title
   end
 
 
