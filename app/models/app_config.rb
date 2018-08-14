@@ -1,5 +1,3 @@
 class AppConfig < ApplicationRecord
-  def self.find
-    first
-  end
+  include ActiveRecord::Singleton
 end

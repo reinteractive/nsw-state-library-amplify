@@ -1,6 +1,6 @@
 class AddAmplifyApp < SeedMigration::Migration
   def up
-    AppConfig.create!(app_name: 'State Library of New South Wales')
+    AppConfig.send :create!, { app_name: 'State Library of New South Wales' }
   end
 
   def down

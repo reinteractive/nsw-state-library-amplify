@@ -36,7 +36,7 @@ class ApplicationController < ActionController::Base
   end
 
   def load_app_config
-    @app_config || (@app_config = AppConfig.find)
+    @app_config ||= AppConfig.instance
   end
 
   def load_footer
