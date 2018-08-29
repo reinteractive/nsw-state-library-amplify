@@ -20,7 +20,6 @@ class ApplicationController < ActionController::Base
   before_action :set_ie_headers
   before_action :load_app_config
 
-
   # Ensure a session id is available for all!
   def touch_session
     session[:touched] = 1

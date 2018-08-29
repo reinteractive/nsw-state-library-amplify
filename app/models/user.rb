@@ -2,10 +2,10 @@ class User < ApplicationRecord
   # Include default devise modules.
   devise :database_authenticatable,
           :recoverable, :confirmable, :registerable,
-          :rememberable, :trackable, :validatable, :omniauthable
-  devise :omniauthable, omniauth_providers: [:google_oauth2]
+          :rememberable, :trackable, :validatable, :omniauthable,
+          omniauth_providers: [:google_oauth2]
 
-  include DeviseTokenAuth::Concerns::User
+  # include DeviseTokenAuth::Concerns::User
 
   belongs_to :user_role, optional: true
   belongs_to :institution, optional: true

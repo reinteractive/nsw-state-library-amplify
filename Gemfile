@@ -40,7 +40,8 @@ gem 'bootsnap', '>= 1.1.0', require: false
 gem 'figaro'
 
 # User management / auth
-gem 'devise_token_auth'
+# gem 'devise_token_auth'
+gem 'devise'
 gem 'omniauth', '~> 1.4.2'
 gem 'omniauth-google-oauth2'
 gem 'omniauth-facebook'
