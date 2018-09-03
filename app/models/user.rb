@@ -3,7 +3,7 @@ class User < ApplicationRecord
   devise :database_authenticatable,
           :recoverable, :confirmable, :registerable,
           :rememberable, :trackable, :validatable, :omniauthable,
-          omniauth_providers: [:google_oauth2]
+          omniauth_providers: [:google_oauth2, :facebook]
 
   # include DeviseTokenAuth::Concerns::User
 

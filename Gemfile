@@ -93,6 +93,7 @@ group :development do
 
   gem 'dotenv-rails'
   gem "reinteractive-style"
+  gem "letter_opener"
 end
 
 group :test do
