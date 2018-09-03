@@ -2,6 +2,7 @@ server 'ec2-52-63-16-71.ap-southeast-2.compute.amazonaws.com', user: 'deploy', r
 
 set :rails_env, 'staging'
 set :branch, 'develop'
+set :branch, 'feature/login_with_email'
 
 
 # server-based syntax
