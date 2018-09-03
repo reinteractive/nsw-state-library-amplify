@@ -28,7 +28,8 @@ Rails.application.routes.draw do
     end
   end
 
-  devise_for :users, controllers: {
+  devise_for :users,
+    controllers: {
     sessions: "users/sessions",
     omniauth_callbacks: 'users/omniauth_callbacks',
     registrations: "users/registrations",
@@ -39,14 +40,14 @@ Rails.application.routes.draw do
   #   controllers: { omniauth_callbacks: 'users/omniauth_callbacks' }
 
   # Handle additional providers such as SAML.
-  match 'auth/:provider/callback',
-    controller: 'users/omniauth_callbacks',
-    action: 'redirect_callbacks',
-    via: [:post],
-    defaults: {
-      'namespace_name' => 'omniauth',
-      'resource_class' => 'User'
-    }
+  # match 'users/auth/:provider/callback',
+  #   controller: 'users/omniauth_callbacks',
+  #   action: 'redirect_callbacks',
+  #   via: [:post],
+  #   defaults: {
+  #     'namespace_name' => 'omniauth',
+  #     'resource_class' => 'User'
+  #   }
 
   match 'page/faq' => 'page#faq', :via => [:get]
   match 'page/about' => 'page#about', :via => [:get]

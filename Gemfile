@@ -42,10 +42,10 @@ gem 'figaro'
 # User management / auth
 # gem 'devise_token_auth'
 gem 'devise'
-gem 'omniauth', '~> 1.4.2'
+# gem 'omniauth', '~> 1.4.2'
 gem 'omniauth-google-oauth2'
 gem 'omniauth-facebook'
-gem 'omniauth-saml'
+# gem 'omniauth-saml'
 
 # Parsers for project asset precompilation
 gem 'redcarpet'

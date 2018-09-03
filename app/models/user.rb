@@ -93,12 +93,14 @@ class User < ApplicationRecord
     user = User.where(email: data['email']).first
 
     unless user
-      user = User.create(name: data['name'],
+      user = User.new(name: data['name'],
                          email: data['email'],
                          password: Devise.friendly_token[0,20]
                         )
+      user.skip_confirmation!
+      user.skip_confirmation_notification!
+      user.save
     end
     user
   end
-
 end

@@ -29,6 +29,10 @@ class Transcript < ApplicationRecord
   attribute :audio_item_url_title, :string, default: "View audio in Library catalogue"
   attribute :image_item_url_title, :string, default: "View image in Library catalogue"
 
+  def audio_url(*args)
+    "http://google.com/text.mp3"
+  end
+
   def self.seconds_per_line
     5
   end
