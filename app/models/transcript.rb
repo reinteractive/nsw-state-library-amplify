@@ -4,7 +4,7 @@ class Transcript < ApplicationRecord
   include UidValidation
 
   mount_uploader :image, ImageUploader
-  mount_uploader :audio, AudioUploader  # =>
+  mount_uploader :audio, AudioUploader
   mount_uploader :script, TranscriptUploader
 
   include PgSearch
@@ -26,7 +26,7 @@ class Transcript < ApplicationRecord
   has_many :transcript_edits, dependent: :destroy
   has_many :transcript_speakers, dependent: :destroy
 
-  attribute :audio_item_url_title, :string, default: "View audio in Library catalogue"  # =>
+  attribute :audio_item_url_title, :string, default: "View audio in Library catalogue"
   attribute :image_item_url_title, :string, default: "View image in Library catalogue"
 
   def self.seconds_per_line

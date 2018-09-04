@@ -1,5 +1,4 @@
 class ApplicationController < ActionController::Base
-  # include DeviseTokenAuth::Concerns::SetUserByToken
   include Authentication
 
   # Prevent CSRF attacks by raising an exception.
@@ -8,11 +7,6 @@ class ApplicationController < ActionController::Base
 
   # Allow us to use JBuilder
   include ActionController::ImplicitRender
-
-  # Allow us to cache
-  # include ActionController::Caching
-  # self.perform_caching = true
-  # self.cache_store = ActionController::Base.cache_store
 
   before_action :touch_session
   before_action :load_user_edits
@@ -42,7 +36,7 @@ class ApplicationController < ActionController::Base
     site = Site.new
     @global_content = {
       footer_content: site.footer_content,
-      footer_links: site.footer_links
+      footer_links: site.footer_links,
     }
   end
 

@@ -5,8 +5,6 @@ class User < ApplicationRecord
           :rememberable, :trackable, :validatable, :omniauthable,
           omniauth_providers: [:google_oauth2, :facebook]
 
-  # include DeviseTokenAuth::Concerns::User
-
   belongs_to :user_role, optional: true
   belongs_to :institution, optional: true
 
