@@ -21,6 +21,24 @@ class StatsService
     }
   end
 
+  def completion_stats(institution_id = nil, collection_id = nil)
+    scope = Transcript.
+          joins("INNER JOIN collections ON
+                 transcripts.collection_id = collections.id")
+    scope = scope.where("collections.institution_id = ?", institution_id) if institution_id
+    scope = scope.where("collections.id = ?", collection_id) if collection_id
+
+    total_count = scope.count
+    completed_count = scope.completed.count
+    reviewing_count = scope.reviewing.count
+    pending_count = scope.pending.count
+    {
+      completed: (completed_count.to_f / total_count.to_f) * 100,
+      reviewing: (reviewing_count.to_f / total_count.to_f) * 100,
+      pending: (pending_count.to_f / total_count.to_f) * 100,
+    }
+  end
+
   def user_registrations
     {
       all: user_get_stats_by_day.length,
