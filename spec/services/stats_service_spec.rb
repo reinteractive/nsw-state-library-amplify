@@ -13,15 +13,15 @@ RSpec.describe StatsService, type: :service do
       create :transcript_edit, transcript: transcript2
     end
 
-    context "when checking for all the edit stats" do
-      it "shows the correct collection" do
+    context "when not passing an institution" do
+      it "shows stats for all" do
         expect(described_class.new(user).transcript_edits).
           to eq(all: 2, past_30_days: 2, past_7_days: 2, past_24_hours: 2)
       end
     end
 
     context "when passing institution" do
-      it "shows the correct collection" do
+      it "shows stats for the given institution" do
         expect(described_class.new(user).transcript_edits(institution1.id)).
           to eq(all: 1, past_30_days: 1, past_7_days: 1, past_24_hours: 1)
       end
