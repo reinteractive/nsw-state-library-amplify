@@ -8,9 +8,19 @@ class Admin::SummaryController < AdminController
   end
 
   def details
-    @collection = policy_scope(Collection).where(institution_id: params[:institution_id].to_i)
-    collection_id = params[:collection_id].to_i > 0 ? params[:collection_id].to_i : nil
-    ins_id = params[:institution_id].to_i > 0 ? params[:institution_id].to_i : nil
-    @stats = StatsService.new(current_user).completion_stats(ins_id, collection_id)
+    @collection = policy_scope(Collection).
+      where(institution_id: params[:institution_id].to_i)
+    @stats = StatsService.new(current_user).
+      completion_stats(institution_id, collection_id)
+  end
+
+  private
+
+  def collection_id
+    params[:collection_id].to_i > 0 ? params[:collection_id].to_i : nil
+  end
+
+  def institution_id
+    params[:institution_id].to_i > 0 ? params[:institution_id].to_i : nil
   end
 end

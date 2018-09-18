@@ -37,7 +37,7 @@ RSpec.describe StatsService, type: :service do
     before do
       create :transcript, collection: collection1, percent_completed: 100
       create :transcript, collection: collection2, percent_completed: 100
-      create :transcript, collection: collection1, percent_reviewing: 50, percent_edited: 50
+      create :transcript, collection: collection1, percent_reviewing: 50
       create :transcript, collection: collection2, percent_edited: 50
     end
 
@@ -50,7 +50,8 @@ RSpec.describe StatsService, type: :service do
 
     context "when passing a collection" do
       it "shows stats for collection" do
-        expect(described_class.new(user).completion_stats(institution.id, collection1.id)).
+        expect(described_class.new(user).completion_stats(institution.id,
+                                                          collection1.id)).
           to eq(completed: 50.0, pending: 0.0, reviewing: 50.0)
       end
     end

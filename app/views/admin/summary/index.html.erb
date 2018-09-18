@@ -8,14 +8,10 @@
     <p>Institution:
     <%= collection_select(:institution, :id, @institutions,
                           :id, :name,
-                          include_blank: 'Select an institution') %>
+                          include_blank: "All Institutions") %>
     </p>
     <span id="collection">
-      <p>Collection:
-      <%= select_tag "collection_select", options_from_collection_for_select(@collection, "id", "title"),
-                     include_blank: 'Select a collection'
-      %>
-      </p>
+      <%= render "collection", collection: @collection %>
     </span>
   </div>
   <div class="card-body" id="summary-stats">
