@@ -9,8 +9,8 @@ $(document).ready(function(){
 
 
   function loadSummary(){
-    institutionId = $("#institution_id").val() || 0
-    collectionId = $("#collection_select").val() || 0
+    var institutionId = $("#institution_id").val() || 0
+    var collectionId = $("#collection_select").val() || 0
     $.ajax({
         url: "/admin/summary/details?institution_id=" + institutionId + "&collection_id=" + collectionId
     });
