@@ -5,12 +5,7 @@
   </div>
   <div class="card-body">
     <div class="sums">
-      <% value.each do |_key, _value| %>
-        <div class="sum">
-          <div class="sum-label"><%= display_name _key %></div>
-          <div class="sum-value"><%= value[_key].to_i %> </div>
-        </div>
-      <% end %>
+      <%= render "stat_list", value: value  %>
     </div>
   </div>
 </div>
