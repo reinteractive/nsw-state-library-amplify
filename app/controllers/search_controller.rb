@@ -1,5 +1,5 @@
 class SearchController < ApplicationController
-  before_action :collection, except: [:index]
+  before_action :load_collection, except: [:index]
   before_action :load_institutions
 
   layout "public"
@@ -28,8 +28,7 @@ class SearchController < ApplicationController
   end
 
   def search_params
-    params.require(:data).permit(:sort_by, :order,
-                                 :collection_id, :q, :page,
-                                 :deep, :institution_id)
+    params.require(:data).permit(:collection_id, :q,
+                                 :institution_id)
   end
 end

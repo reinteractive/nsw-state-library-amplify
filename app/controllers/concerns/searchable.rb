@@ -34,7 +34,7 @@ module Searchable
                     end.to_a.unshift(new_institution)
   end
 
-  def collection
+  def load_collection
     new_collection = Collection.new(id: 0, title: "All Collections")
     institution_id = sort_params[:institution_id].to_i
     collection = Collection.published
