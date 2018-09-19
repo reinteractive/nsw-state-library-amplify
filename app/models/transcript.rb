@@ -428,8 +428,6 @@ class Transcript < ApplicationRecord
     # check for institution
     transcripts = transcripts.where("institutions.id = :id", {id: options[:institution_id].to_i}) if options[:institution_id].present?
 
-    # require 'pry'; binding.pry
-
     # Check for sort
     transcripts = transcripts.order("transcripts.#{sort_by} #{sort_order}")
   end
