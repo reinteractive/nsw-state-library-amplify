@@ -1,5 +1,4 @@
 class Project
-  has_paper_trail
   # rubocop:disable Naming/MethodName
   # rubocop:disable Metrics/LineLength
   def self.getActive(collection_id = nil)
