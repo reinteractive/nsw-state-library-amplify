@@ -23,7 +23,7 @@ gem "coffee-rails", "~> 4.2"
 gem "font-awesome-rails", "~> 4.7"
 gem "jquery-rails", "~> 4.3"
 gem "sass-rails", "~> 5.0"
-gem "summernote-rails", "~> 0.8"
+gem "summernote-rails", "0.8.10.0"
 gem "uglifier", ">= 1.3"
 
 # Back-end App is treated mostly as a JSON API
