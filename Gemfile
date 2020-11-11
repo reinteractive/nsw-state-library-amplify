@@ -27,7 +27,7 @@ gem "font-awesome-rails", "~> 4.7.0"
 gem "jquery-rails", "~> 4.3.3"
 gem "sass-rails", "~> 5.0"
 gem "select2-rails", "~> 4.0.13"
-gem "summernote-rails", "~> 0.8.10"
+gem "summernote-rails", "0.8.10.0"
 gem "uglifier", ">= 1.3.0"
 
 # Back-end App is treated mostly as a JSON API
