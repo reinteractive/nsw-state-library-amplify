@@ -1,0 +1,23 @@
+language: ruby
+rvm: 2.5.3
+sudo: required
+
+services:
+  - postgresql
+
+addons:
+  chrome: stable
+  postgresql: "9.6"
+
+before_install:
+  - gem update --system
+  - gem install bundler --version 1.17.3
+
+before_script:
+  - cp config/database.travis.yml config/database.yml
+  - cp .env.example .env
+  - bundle exec rake db:reset db:setup db:migrate RAILS_ENV=test
+  - bundle exec rake db:test:prepare
+
+script:
+  - RAILS_ENV=test bundle exec rspec spec
