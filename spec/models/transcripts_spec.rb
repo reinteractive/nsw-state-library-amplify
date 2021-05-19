@@ -199,13 +199,13 @@ RSpec.describe Transcript, type: :model do
         expect(described_class.search(
           collection_id: [collection1.id],
           institution_id: institution1.id,
-        ).count).to eq(1)
+        ).to_a.size).to eq(1)
       end
     end
 
     context "without options" do
       it "shows all the trasncripts" do
-        expect(described_class.search({}).count).to eq(2)
+        expect(described_class.search({}).to_a.size).to eq(2)
       end
     end
 
