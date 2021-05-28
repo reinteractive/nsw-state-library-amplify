@@ -17,9 +17,9 @@ class Transcript < ApplicationRecord
   include PgSearch
   include Publishable
 
-  multisearchable :against => [:title, :description]
-  pg_search_scope :search_default, :against => [:title, :description]
-  pg_search_scope :search_by_title, :against => :title
+  multisearchable against: [:title, :description]
+  pg_search_scope :search_default, against: [:title, :description]
+  pg_search_scope :search_by_title, against: :title
 
   scope :voicebase_processing_pending, -> { voicebase.where(process_completed_at: nil) }
   scope :not_picked_up_for_voicebase_processing, -> { voicebase.where.not(process_started_at: nil) }
@@ -101,7 +101,7 @@ class Transcript < ApplicationRecord
   def self.getByUserEdited(user_id)
     Transcript
       .joins(:transcript_edits)
-      .where(transcript_edits: {user_id: user_id}).distinct
+      .where(transcript_edits: { user_id: user_id }).distinct
   end
 
   def self.getForExport(project_uid, collection_uid=false)
@@ -166,7 +166,7 @@ class Transcript < ApplicationRecord
     query = query.where("transcripts.title ILIKE :search or transcripts.description ILIKE :search", search: "%#{params[:search]}%") if params[:search].present?
 
     if sort.match(/title/i)
-      arr = query.sort_by {|e| e.title.gsub(/\d+/) {|num| "#{num.length} #{num}"}}
+      arr = query.sort_by { |e| e.title.gsub(/\d+/) { |num| "#{num.length} #{num}" } }
       sort == "title_asc" ? arr : arr.reverse
     else
       order = sort_string(params[:sort_by])

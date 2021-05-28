@@ -7,7 +7,12 @@ module Azure
 
     def recognize
       convert_audio_to_wav
-      JSON.parse(transcripts_from_sdk).tap { cleanup }
+
+      result = OpenStruct.new
+      result.lines = JSON.parse(transcripts_from_sdk)
+      result.wav_file_path = wav_file
+
+      result
     rescue Exception => e
       cleanup
       raise e
@@ -36,11 +41,11 @@ module Azure
     # Convert the file to what azure speech-to-text javascript SDK requires
     # @see speech-to-text.js
     def convert_audio_to_wav
-      stdout, stderr, status =
-        Open3.capture3("ffmpeg", "-i", file.to_s, "-ac", "1", "-ar", "16000", wav_file)
+      stdout, stderr, status = Open3.capture3("ffmpeg", "-i", file.to_s, "-ac", "1", "-ar", "16000", wav_file)
       raise Exception, stderr unless status.success?
+
       Rails.logger.debug("--- convert_audio_to_wav ---")
-      Rails.logger.debug(File.size wav_file) if File.exist? wav_file
+      Rails.logger.debug(File.size(wav_file)) if File.exist? wav_file
     end
 
     def transcripts_from_sdk
@@ -53,6 +58,7 @@ module Azure
       Rails.logger.debug(stdout)
       Rails.logger.debug(stderr)
       raise Exception, stderr.presence || stdout unless status.success?
+
       stdout
     end
 
