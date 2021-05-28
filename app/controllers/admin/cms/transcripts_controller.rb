@@ -11,7 +11,7 @@ class Admin::Cms::TranscriptsController < AdminController
   end
 
   def create
-    @transcript = Transcript.new(transcript_params.merge vendor_id: Vendor.first&.id)
+    @transcript = Transcript.new(transcript_params.merge(vendor_id: Vendor.first&.id))
 
     if @transcript.save && @transcript.update(speakers: transcript_params[:speakers])
       flash[:notice] = "The new transcript has been saved."

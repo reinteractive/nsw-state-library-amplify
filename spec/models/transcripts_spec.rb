@@ -44,7 +44,7 @@ RSpec.describe Transcript, type: :model do
   describe "validate uid does not change after create" do
     let(:vendor) { Vendor.create!(uid: "voice_base", name: "VoiceBase") }
     let(:transcript) do
-      Transcript.new(
+      described_class.new(
         uid: "transcript_test",
         vendor_id: vendor.id,
       )
@@ -78,7 +78,7 @@ RSpec.describe Transcript, type: :model do
       )
     end
     let(:transcript) do
-      Transcript.create!(
+      described_class.create!(
         uid: "test_transcript",
         vendor: vendor,
         collection: collection,
