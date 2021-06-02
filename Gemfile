@@ -105,6 +105,9 @@ group :development do
   gem "capistrano-sidekiq", "~> 1.0.2"
   gem "rubocop", "~> 0.65.0"
 
+  gem "bcrypt_pbkdf", "~> 1.1"
+  gem "ed25519", "~> 1.2"
+
   gem "dotenv-rails", "~> 2.7.1"
   gem "letter_opener", "~> 1.7.0"
   gem "reinteractive-style", "~> 0.2.8"
