@@ -137,6 +137,7 @@ gem "tzinfo-data", platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 # tracking errors
 gem "bugsnag", "~> 6.11.1"
 gem "draper", "~> 3.1.0"
+gem 'nokogiri', '1.12.5'
 gem "sanitize", "~> 5.2.0"
 
 gem "acts_as_singleton", "~> 0.0.8"
